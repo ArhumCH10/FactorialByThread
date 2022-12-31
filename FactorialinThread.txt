@@ -1,0 +1,49 @@
+#include<stdio.h>
+#include<unistd.h>
+#include<sys/types.h>
+#include<stdlib.h>
+#include<pthread.h>
+#include<wait.h>
+
+void* factorial(void* ptr)
+{
+    int n = ((int)ptr); // typecasting
+    int* fact = (int*)malloc(sizeof(int));
+    *fact = 1;
+    for (int i=1;i<=n;i++)
+    {
+        *fact *= i;
+    }
+    //return (void*) fact;
+    pthread_exit((void*)fact);
+}
+
+int main()
+{
+    pthread_t tid1,tid2,tid3;
+    int n;
+    printf("Enter value for n: ");
+    scanf("%d",&n);
+    int p;
+    printf("Enter value for p: ");
+    scanf("%d",&p);
+    int a = n - p;
+    pthread_create(&tid1,NULL,&factorial,(void*)&n);
+    pthread_create(&tid2,NULL,&factorial,(void*)&a);
+    pthread_create(&tid3,NULL,&factorial,(void*)&p);
+
+    void* exitstatus;
+    void* exitstatus2;
+    void* exitstatus3;
+    pthread_join(tid1,&exitstatus);
+    pthread_join(tid2,&exitstatus2);
+    pthread_join(tid3,&exitstatus3);
+    int threadresult = ((int)exitstatus); // typrcasting
+    int threadresult2 = ((int)exitstatus2);
+    int threadresult3 = ((int)exitstatus3);
+    int result = threadresult2 * threadresult3;
+    int total = threadresult / result;
+    printf("The Result for C(n,p) is: %d\n", total);
+    
+    return 0;
+}
